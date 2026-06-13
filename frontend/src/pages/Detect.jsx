@@ -5,12 +5,6 @@ import Results from "../components/Results";
 import { Card, CardHeader, Button, Spinner } from "../components/UI";
 import RealisticFigure from "../components/RealisticFigure";
 
-const TAB_ITEMS = [
-  ["text", <RealisticFigure symbol="✏️" className="animated-emoji emoji-icon" />, "Text"],
-  ["url", <RealisticFigure symbol="🌐" className="animated-emoji emoji-icon" />, "URL"],
-  ["file", <RealisticFigure symbol="🖼️" className="animated-emoji emoji-icon" />, "Image"],
-];
-
 const LOADING_HINTS = [
   "Calibrating linguistic fingerprint signals...",
   "Comparing sentence rhythm and perplexity patterns...",
@@ -22,6 +16,7 @@ export default function Detect() {
   const [text,      setText]      = useState("");
   const [url,       setUrl]       = useState("");
   const [file,      setFile]      = useState(null);
+  const [preview,   setPreview]   = useState(null);
   const [loading,   setLoading]   = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
   const [result,    setResult]    = useState(null);
@@ -36,11 +31,23 @@ export default function Detect() {
   const wordCount = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
   const pastedWc  = pastedText.trim().split(/\s+/).filter(Boolean).length;
 
+  const tabHelper =
+    tab === "text" ? "Paste any text (min 20 words) to check if it was AI-generated." :
+    tab === "url"  ? "Supports news articles, blogs, Wikipedia, and most public pages. If the URL fails, a text paste area will appear automatically." :
+                    "Upload a .txt, .md, .html, or .pdf file up to 10 MB for detection.";
+
   const canAnalyze = !loading && (
     (tab === "text" && wordCount >= 20) ||
     (tab === "url"  && (url.trim().startsWith("http") || (showPasteFallback && pastedWc >= 20))) ||
     (tab === "file" && file)
   );
+
+  const onFileChange = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f);
+    setPreview(null);
+  };
 
   const analyze = useCallback(async () => {
     setError(null);
@@ -56,7 +63,6 @@ export default function Detect() {
         res = await detectText(text.trim());
 
       } else if (tab === "url") {
-        // If user pasted text manually after failed extraction
         if (showPasteFallback && pastedWc >= 20) {
           setStatusMsg("Analyzing pasted text…");
           res = await detectText(pastedText.trim());
@@ -72,7 +78,6 @@ export default function Detect() {
 
       setResult(res);
     } catch (e) {
-      // Special case: all extraction methods failed — show inline paste area
       if (e.extractionFailed) {
         setShowPasteFallback(true);
         setStatusMsg("");
@@ -88,7 +93,7 @@ export default function Detect() {
 
   const reset = () => {
     setResult(null); setError(null); setStatusMsg("");
-    setText(""); setUrl(""); setFile(null);
+    setText(""); setUrl(""); setFile(null); setPreview(null);
     setShowPasteFallback(false); setPastedText("");
   };
 
@@ -145,18 +150,6 @@ export default function Detect() {
       padding:"10px 18px", background:"rgba(0,229,255,0.06)",
       border:"1px solid rgba(0,229,255,0.2)", borderRadius:8,
     },
-    errBox:   {
-      background:"rgba(255,60,110,0.08)", border:"1px solid rgba(255,60,110,0.3)",
-      borderRadius:10, padding:20, fontSize:13, color:"#ff8aa8",
-      display:"flex", gap:12, marginBottom:16,
-    },
-    // Paste fallback styles
-    fallback: {
-      marginTop:16, padding:16, background:"rgba(255,184,48,0.06)",
-      border:"1px solid rgba(255,184,48,0.3)", borderRadius:10,
-    },
-    fallbackTitle: { fontSize:13, color:"var(--warn)", fontWeight:700, marginBottom:8, display:"flex", gap:8, alignItems:"center" },
-    fallbackSub:   { fontSize:11, color:"var(--muted)", marginBottom:12, lineHeight:1.6 },
   };
 
   return (
@@ -204,10 +197,11 @@ export default function Detect() {
                   onKeyDown={e => e.key === "Enter" && canAnalyze && analyze()}
                 />
 
-                {/* Inline paste fallback — shown when all proxies fail */}
                 {showPasteFallback && (
-                  <div className="fade-in-quick" style={{ marginTop: 16, padding: 16, background: "rgba(255,184,48,0.06)", border: "1px solid rgba(255,184,48,0.3)", borderRadius: 10, animation: "fadeInUpCascade 400ms cubic-bezier(0.34,1.56,0.64,1)" }}>
-                    <div style={{ fontSize: 13, color: "var(--warn)", fontWeight: 700, marginBottom: 8 }}><RealisticFigure symbol="⚠️" className="animated-emoji emoji-status" /> Could not auto-extract text from this URL</div>
+                  <div style={{ marginTop: 16, padding: 16, background: "rgba(255,184,48,0.06)", border: "1px solid rgba(255,184,48,0.3)", borderRadius: 10, animation: "fadeInUpCascade 400ms cubic-bezier(0.34,1.56,0.64,1)" }}>
+                    <div style={{ fontSize: 13, color: "var(--warn)", fontWeight: 700, marginBottom: 8 }}>
+                      <RealisticFigure symbol="⚠️" className="animated-emoji emoji-status" /> Could not auto-extract text from this URL
+                    </div>
                     <div style={{ fontSize: 11, color: "var(--muted)", marginBottom: 12, lineHeight: 1.6 }}>
                       The website blocks automated access. Open the page, copy text, and paste below.
                     </div>
@@ -224,13 +218,6 @@ export default function Detect() {
                     </div>
                   </div>
                 )}
-
-                {!showPasteFallback && (
-                  <div style={{ marginTop:8, fontSize:11, color:"var(--muted)", lineHeight:1.6 }}>
-                    💡 Supports news articles, blogs, Wikipedia, and most public pages.
-                    If the URL fails, a text paste area will appear automatically.
-                  </div>
-                )}
               </div>
             )}
 
@@ -243,11 +230,12 @@ export default function Detect() {
                 onDrop={handleDrop}
                 style={S.drop(dragging)}
               >
-<<<<<<< HEAD
                 <input ref={fileRef} type="file" accept=".txt,.md,.html,.htm,.pdf"
-                  style={{ display:"none" }} onChange={e => setFile(e.target.files[0])} />
-                <div style={{ fontSize:36, marginBottom:10 }}>{file ? "📄" : "📂"}</div>
-                <p style={{ fontSize:13, color:"var(--muted)", lineHeight:1.7 }}>
+                  style={{ display:"none" }} onChange={onFileChange} />
+                <div style={{ fontSize:36, marginBottom:10, animation:"fadeInUpCascade 400ms ease-out" }}>
+                  <RealisticFigure symbol={file ? "📄" : "📂"} className="animated-emoji emoji-icon" size={36} />
+                </div>
+                <p style={{ fontSize:13, color:"var(--muted)", lineHeight:1.7, animation:"fadeInUpCascade 500ms ease-out 100ms backwards" }}>
                   {file
                     ? <strong style={{ color:"var(--text)" }}>{file.name}</strong>
                     : <><strong style={{ color:"var(--text)" }}>Click or drag</strong> to upload<br/>.txt · .md · .html · .pdf</>
@@ -255,26 +243,10 @@ export default function Detect() {
                 </p>
               </div>
             )}
-=======
-                <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={onFileChange} />
-                {preview ? (
-                  <div className="zoom-in">
-                    <img src={preview} alt="preview" style={{ maxWidth: "100%", maxHeight: 300, borderRadius: 8, border: "1px solid var(--border2)", animation: "blurInReveal 480ms cubic-bezier(0.34,1.56,0.64,1)" }} />
-                    <div style={{ marginTop: 12, fontSize: 12, color: "var(--accent)", animation: "fadeInUpCascade 500ms ease-out 200ms backwards" }}>{file?.name}</div>
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ fontSize: 36, marginBottom: 10, animation: "fadeInUpCascade 400ms ease-out" }}><RealisticFigure symbol="🖼️" className="animated-emoji emoji-icon" size={36} /></div>
-                    <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.7, animation: "fadeInUpCascade 500ms ease-out 100ms backwards" }}>Click or drag an image to analyze</p>
-                  </>
-                )}
-              </div>
-            )}
 
             <div style={{ marginTop: 12, border: "1px dashed var(--border2)", borderRadius: 10, padding: "11px 13px", background: "rgba(9,16,25,0.55)", color: "var(--muted2)", fontSize: 11, lineHeight: 1.65, transition: "all 200ms ease", animation: "fadeInUpCascade 600ms ease-out 150ms backwards" }}>
               <RealisticFigure symbol="💡" className="animated-emoji emoji-status" /> {tabHelper}
             </div>
->>>>>>> 1ff5df1 (Add animated frontend polish)
           </div>
 
           <div style={S.actions}>
@@ -283,13 +255,8 @@ export default function Detect() {
                 {wordCount} words{wordCount > 0 && wordCount < 20 ? ` · need ${20 - wordCount} more` : ""}{wordCount >= 20 ? " · ready ✓" : ""}
               </div>
             )}
-<<<<<<< HEAD
             <Button onClick={analyze} disabled={!canAnalyze} style={{ width:"100%", fontSize:14, padding:16 }}>
-              🔍 {showPasteFallback && pastedWc >= 20 ? "Analyze Pasted Text" : "Analyze"}
-=======
-            <Button onClick={analyze} disabled={!canAnalyze} style={{ width: "100%", fontSize: 14, padding: 16 }}>
               <RealisticFigure symbol="🔍" className="animated-emoji emoji-action" /> {showPasteFallback && pastedWc >= 20 ? "Analyze Pasted Text" : "Analyze"}
->>>>>>> 1ff5df1 (Add animated frontend polish)
             </Button>
           </div>
         </Card>
@@ -309,62 +276,20 @@ export default function Detect() {
       {/* Error */}
       {error && !showPasteFallback && (
         <>
-<<<<<<< HEAD
-          <div style={S.errBox}>
-            <span style={{ flexShrink:0 }}>⚠️</span><div>{error}</div>
-=======
-          <div className="fade-in-quick" style={{ background: "rgba(255,60,110,0.08)", border: "1px solid rgba(255,60,110,0.3)", borderRadius: 10, padding: 20, fontSize: 13, color: "#ff8aa8", display: "flex", gap: 12, marginBottom: 16, animation: "errorShake 300ms ease-out" }}>
-            <span style={{ flexShrink: 0 }}><RealisticFigure symbol="⚠️" className="animated-emoji emoji-status" /></span><div>{error}</div>
->>>>>>> 1ff5df1 (Add animated frontend polish)
+          <div style={{ background:"rgba(255,60,110,0.08)", border:"1px solid rgba(255,60,110,0.3)", borderRadius:10, padding:20, fontSize:13, color:"#ff8aa8", display:"flex", gap:12, marginBottom:16, animation:"errorShake 300ms ease-out" }}>
+            <span style={{ flexShrink:0 }}><RealisticFigure symbol="⚠️" className="animated-emoji emoji-status" /></span>
+            <div>{error}</div>
           </div>
           <Button variant="ghost" onClick={reset} style={{ width:"100%" }}>← Try Again</Button>
         </>
       )}
 
-<<<<<<< HEAD
       {/* Results */}
-      {result && <Results result={result} onReset={reset} />}
-=======
       {result && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 32, animation: "fadeInUpCascade 500ms ease-out" }}>
+        <div style={{ display:"flex", flexDirection:"column", gap:32, animation:"fadeInUpCascade 500ms ease-out" }}>
           <Results result={result} onReset={reset} />
-
-          {(tab === "text" || tab === "url") && (
-            <div style={{ marginTop: 16 }}>
-              {factLoading && (
-                <Card className="fade-in-quick">
-                  <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "30px 20px" }}>
-                    <Spinner size={30} />
-                    <div>
-                      <div style={{ fontSize: 13, letterSpacing: 1, color: "var(--accent)", animation: "textShimmerSoft 2.2s ease-in-out infinite" }}>FACT CHECKING IN PROGRESS</div>
-                      <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 6 }}>
-                        Analyzing context, querying real-time web sources, and verifying sentences...
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              {factError && (
-                <div className="fade-in-quick" style={{ background: "rgba(255,60,110,0.08)", border: "1px solid rgba(255,60,110,0.3)", borderRadius: 10, padding: 20, fontSize: 13, color: "#ff8aa8", display: "flex", gap: 12, marginBottom: 16, animation: "errorShake 300ms ease-out" }}>
-                  <span style={{ flexShrink: 0 }}><RealisticFigure symbol="⚠️" className="animated-emoji emoji-status" /></span>
-                  <div>Fact Checking Failed: {factError}</div>
-                </div>
-              )}
-
-              {factResult && (
-                <div className="fade-in-slow">
-                  <h2 style={{ fontFamily: "var(--head)", color: "#fff", marginBottom: 16, fontSize: 24, animation: "fadeInUpCascade 500ms ease-out" }}>
-                    Fact & Claim Verification
-                  </h2>
-                  <FactCheckReport result={factResult} />
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
->>>>>>> 1ff5df1 (Add animated frontend polish)
     </div>
   );
 }
