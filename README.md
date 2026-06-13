@@ -12,7 +12,7 @@
 [![Groq](https://img.shields.io/badge/GROQ-LLAMA%203.3%2070B-f97316?style=for-the-badge)](https://console.groq.com)
 [![Clerk](https://img.shields.io/badge/AUTH-CLERK-6c47ff?style=for-the-badge&logo=clerk&logoColor=white)](https://clerk.com)
 [![MIT License](https://img.shields.io/badge/LICENSE-MIT-22c55e?style=for-the-badge)](./LICENSE)
-[![Hackathon](https://img.shields.io/badge/🏆%20HACKATHON-2026-ec4899?style=for-the-badge)](https://github.com/SAMPRIT-NANDI/DETECT-AI-SUPER-CHAMPION)
+[![Hackathon](https://img.shields.io/badge/🏆%20HACKATHON-2026-ec4899?style=for-the-badge)](https://github.com/puspitaj300-code/Detector-AI)
 
 <br/>
 
@@ -307,8 +307,8 @@ flowchart TD
 ### 1 — Clone & Install
 
 ```bash
-git clone https://github.com/SAMPRIT-NANDI/DETECT-AI-SUPER-CHAMPION.git
-cd DETECT-AI-SUPER-CHAMPION
+git clone https://github.com/puspitaj300-code/Detector-AI.git
+cd Detector-AI
 npm run install:all
 ```
 
@@ -489,10 +489,7 @@ Built with 🤖 for **Hackathon 2026**
 
 | | Name | GitHub |
 |---|---|---|
-| 🧑‍💻 | **Samprit Nandi** | [![GitHub](https://img.shields.io/badge/SAMPRIT--NANDI-181717?style=for-the-badge&logo=github)](https://github.com/SAMPRIT-NANDI) |
-| 🧑‍💻 | **Sania Parveen** | [![GitHub](https://img.shields.io/badge/Sania%20Parveen-181717?style=for-the-badge&logo=github)](https://github.com) |
-| 🧑‍💻 | **Sambhab Rooj** | [![GitHub](https://img.shields.io/badge/Sambhab%20Rooj-181717?style=for-the-badge&logo=github)](https://github.com) |
-| 🧑‍💻 | **Rohit Banerjee** | [![GitHub](https://img.shields.io/badge/Rohit%20Banerjee-181717?style=for-the-badge&logo=github)](https://github.com) |
+| 🧑‍💻 | **Puspita J** | [![GitHub](https://img.shields.io/badge/puspitaj300--code-181717?style=for-the-badge&logo=github)](https://github.com/puspitaj300-code) |
 
 </div>
 
@@ -507,7 +504,7 @@ Built with 🤖 for **Hackathon 2026**
 ![robot-ezgif com-gif-maker](https://github.com/user-attachments/assets/e5570a73-d864-4660-840c-0819cd11476f)
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&size=15&duration=3000&pause=1000&color=7C3AED&center=true&vCenter=true&width=500&height=40&lines=Thanks+for+visiting+DETECT+AI!;Star+⭐+if+you+found+it+useful!;Built+with+⚡+Groq+%2B+React+%2B+Express)](https://git.io/typing-svg)
 
-**[MIT](./LICENSE) © 2026 — DetectAI Super Champion**
+**[MIT](./LICENSE) © 2026 — Puspita J**
 
 `[ UNIT-7 SIGNING OFF... GOOD HUNTING ]`
 
