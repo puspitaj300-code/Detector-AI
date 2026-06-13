@@ -7,7 +7,7 @@
 <br/>
 
 <!-- Status Badges Row -->
-[![Live Demo](https://img.shields.io/badge/▶%20LIVE%20DEMO-VERCEL-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
+[![Live Demo](https://img.shields.io/badge/▶%20LIVE%20DEMO-VERCEL-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://detector-ai-eight.vercel.app)
 [![Node](https://img.shields.io/badge/NODE.JS-≥18-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Groq](https://img.shields.io/badge/GROQ-LLAMA%203.3%2070B-f97316?style=for-the-badge)](https://console.groq.com)
 [![Clerk](https://img.shields.io/badge/AUTH-CLERK-6c47ff?style=for-the-badge&logo=clerk&logoColor=white)](https://clerk.com)
